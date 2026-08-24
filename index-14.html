@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ادیتورF|B — استودیوی ادیت و طراحی</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07050c;
+  --bg-2:#0d0817;
+  --panel:#130b21;
+  --panel-2:#180f28;
+  --purple-deep:#3c1f66;
+  --purple:#7c3fc9;
+  --purple-bright:#a855f7;
+  --purple-glow:#c084fc;
+  --gold:#e2ac4d;
+  --gold-bright:#f5cd6b;
+  --text:#f4efe4;
+  --muted:#a89bbf;
+  --muted-2:#6f6386;
+  --line:rgba(226,172,77,0.22);
+  --line-2:rgba(168,85,247,0.28);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html{scroll-behavior:smooth;}
+::selection{background:var(--purple-bright); color:#fff;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Vazirmatn', sans-serif;
+  overflow-x:hidden;
+  position:relative;
+  cursor:default;
+}
+img,svg{display:block;}
+
+/* ---------- ambient background ---------- */
+.bg-fx{position:fixed; inset:0; z-index:0; pointer-events:none;}
+.bg-fx .g1{
+  position:absolute; top:-20%; right:-10%; width:60vw; height:60vw; max-width:900px; max-height:900px;
+  background:radial-gradient(circle, rgba(124,63,201,0.32), transparent 65%);
+  filter:blur(10px);
+  animation:float1 22s ease-in-out infinite;
+}
+.bg-fx .g2{
+  position:absolute; bottom:-25%; left:-15%; width:55vw; height:55vw; max-width:800px; max-height:800px;
+  background:radial-gradient(circle, rgba(226,172,77,0.14), transparent 65%);
+  animation:float2 26s ease-in-out infinite;
+}
+.bg-fx .g3{
+  position:absolute; top:40%; left:35%; width:40vw; height:40vw; max-width:600px; max-height:600px;
+  background:radial-gradient(circle, rgba(168,85,247,0.16), transparent 65%);
+  animation:float1 30s ease-in-out infinite reverse;
+}
+@keyframes float1{0%,100%{transform:translate(0,0);} 50%{transform:translate(-40px,50px);}}
+@keyframes float2{0%,100%{transform:translate(0,0);} 50%{transform:translate(50px,-40px);}}
+.grain{
+  position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.05; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.spark{
+  position:fixed; border-radius:50%; pointer-events:none; z-index:1;
+  background:var(--gold-bright);
+  box-shadow:0 0 8px 2px rgba(245,205,107,0.7);
+  animation:rise linear infinite;
+}
+@keyframes rise{
+  from{transform:translateY(0) scale(1); opacity:0;}
+  10%{opacity:1;}
+  90%{opacity:0.8;}
+  to{transform:translateY(-110vh) scale(0.4); opacity:0;}
+}
+
+.wrap{position:relative; z-index:2; max-width:1180px; margin:0 auto; padding:0 24px;}
+
+/* ---------- reveal on scroll ---------- */
+.reveal{opacity:0; transform:translateY(26px); transition:opacity .8s cubic-bezier(.16,.8,.3,1), transform .8s cubic-bezier(.16,.8,.3,1);}
+.reveal.in{opacity:1; transform:translateY(0);}
+.reveal-d1{transition-delay:.08s;}
+.reveal-d2{transition-delay:.16s;}
+.reveal-d3{transition-delay:.24s;}
+.reveal-d4{transition-delay:.32s;}
+
+/* ---------- nav ---------- */
+nav{
+  position:sticky; top:0; z-index:50;
+  backdrop-filter:blur(16px);
+  background:rgba(7,5,12,0.55);
+  border-bottom:1px solid rgba(226,172,77,0.12);
+}
+.nav-inner{
+  max-width:1180px; margin:0 auto; padding:16px 24px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.logo{
+  font-weight:800; font-size:19px; letter-spacing:0.5px;
+  display:flex; align-items:center; gap:8px;
+}
+.logo .mark{
+  width:34px; height:34px; border-radius:10px;
+  background:linear-gradient(135deg, var(--purple-bright), var(--purple-deep));
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:900; color:#fff;
+  box-shadow:0 0 20px rgba(168,85,247,0.45);
+}
+.nav-cta{
+  padding:10px 22px; border-radius:12px;
+  background:linear-gradient(90deg, var(--gold-bright), var(--gold));
+  color:#241505; font-weight:800; font-size:14px;
+  text-decoration:none;
+  box-shadow:0 6px 20px -6px rgba(226,172,77,0.55);
+  transition:transform .2s ease;
+}
+.nav-cta:hover{transform:translateY(-2px);}
+
+/* ---------- hero ---------- */
+header{
+  position:relative;
+  padding:100px 0 70px;
+  text-align:center;
+  overflow:hidden;
+}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:13px; font-weight:700; letter-spacing:2.5px;
+  color:var(--gold-bright);
+  border:1px solid var(--line);
+  padding:8px 18px; border-radius:30px;
+  background:rgba(226,172,77,0.06);
+  margin-bottom:34px;
+}
+.eyebrow .dot{width:6px; height:6px; border-radius:50%; background:var(--gold-bright); box-shadow:0 0 8px var(--gold-bright); animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;} 50%{opacity:0.3;}}
+
+h1{
+  font-size:clamp(54px, 10vw, 118px);
+  font-weight:900;
+  line-height:0.98;
+  letter-spacing:-2px;
+  background:linear-gradient(180deg, #ffffff 0%, #e4d6f7 45%, var(--purple-bright) 100%);
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  position:relative;
+}
+h1 .fb{
+  background:linear-gradient(180deg, var(--gold-bright), var(--gold));
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  font-size:0.6em;
+  letter-spacing:3px;
+}
+.hero-sub{
+  color:var(--muted); font-size:17px; font-weight:500;
+  max-width:520px; margin:26px auto 0; line-height:1.9;
+}
+.hero-ctas{
+  display:flex; gap:16px; justify-content:center; margin-top:42px; flex-wrap:wrap;
+}
+.btn{
+  display:inline-flex; align-items:center; gap:10px;
+  padding:16px 34px; border-radius:14px; border:none;
+  font-family:inherit; font-weight:800; font-size:15.5px;
+  cursor:pointer; text-decoration:none;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease;
+}
+.btn-primary{
+  background:linear-gradient(90deg, var(--purple-bright), var(--purple));
+  color:#fff;
+  box-shadow:0 12px 32px -10px rgba(168,85,247,0.65);
+}
+.btn-primary:hover{transform:translateY(-3px) scale(1.02); box-shadow:0 16px 40px -8px rgba(168,85,247,0.8);}
+.btn-ghost{
+  background:transparent; color:var(--text);
+  border:1px solid rgba(244,239,228,0.22);
+}
+.btn-ghost:hover{border-color:var(--gold-bright); color:var(--gold-bright); transform:translateY(-3px);}
+.btn:focus-visible{outline:2px solid var(--gold-bright); outline-offset:3px;}
+
+.orbit-icons{
+  position:relative; margin-top:70px; height:70px;
+}
+.orbit-icons .row{
+  display:flex; justify-content:center; gap:18px; flex-wrap:wrap;
+}
+.tool-chip{
+  display:flex; align-items:center; gap:8px;
+  padding:10px 18px; border-radius:12px;
+  border:1px solid var(--line-2);
+  background:linear-gradient(180deg, rgba(124,63,201,0.12), rgba(124,63,201,0.02));
+  font-size:13.5px; font-weight:700; color:#d8cdea;
+  animation:bob 5s ease-in-out infinite;
+}
+.tool-chip:nth-child(2){animation-delay:.4s;}
+.tool-chip:nth-child(3){animation-delay:.8s;}
+.tool-chip:nth-child(4){animation-delay:1.2s;}
+@keyframes bob{0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);}}
+.tool-chip svg{width:16px; height:16px;}
+
+/* ---------- marquee ---------- */
+.marquee-band{
+  border-top:1px solid rgba(226,172,77,0.16);
+  border-bottom:1px solid rgba(226,172,77,0.16);
+  background:linear-gradient(90deg, rgba(124,63,201,0.08), rgba(226,172,77,0.05));
+  overflow:hidden;
+  padding:16px 0;
+}
+.marquee-track{
+  display:flex; gap:60px; white-space:nowrap;
+  animation:scroll 28s linear infinite;
+  width:max-content;
+}
+.marquee-track span{
+  font-size:15px; font-weight:700; color:var(--muted);
+  display:flex; align-items:center; gap:14px;
+  letter-spacing:0.5px;
+}
+.marquee-track span::after{content:"✦"; color:var(--gold-bright); margin-right:14px; font-size:12px;}
+@keyframes scroll{from{transform:translateX(0);} to{transform:translateX(-50%);}}
+
+/* ---------- section heading ---------- */
+.section-head{text-align:center; margin-bottom:56px;}
+.section-head .eyebrow{margin-bottom:18px;}
+.section-head h2{
+  font-size:clamp(30px,5vw,46px); font-weight:800; color:#fff; letter-spacing:-0.5px;
+}
+.section-head p{color:var(--muted); font-size:15.5px; margin-top:14px; max-width:460px; margin-inline:auto;}
+
+/* ---------- services ---------- */
+.services{padding:120px 0 40px;}
+.service-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:28px;
+}
+@media (max-width:820px){ .service-grid{grid-template-columns:1fr;} }
+
+.s-card{
+  position:relative;
+  background:linear-gradient(165deg, var(--panel-2), #0b0714 70%);
+  border:1px solid var(--line);
+  border-radius:26px;
+  padding:42px 36px;
+  overflow:hidden;
+  transition:transform .35s cubic-bezier(.16,.8,.3,1), border-color .35s ease, box-shadow .35s ease;
+}
+.s-card::before{
+  content:"";
+  position:absolute; inset:-1px;
+  background:radial-gradient(500px 260px at var(--mx,50%) var(--my,0%), rgba(168,85,247,0.22), transparent 60%);
+  opacity:0; transition:opacity .35s ease;
+  pointer-events:none;
+}
+.s-card:hover{transform:translateY(-6px); border-color:var(--line-2); box-shadow:0 30px 60px -20px rgba(124,63,201,0.45);}
+.s-card:hover::before{opacity:1;}
+.s-num{
+  position:absolute; top:26px; left:32px;
+  font-size:70px; font-weight:900; color:transparent;
+  -webkit-text-stroke:1px rgba(226,172,77,0.25);
+  line-height:1;
+}
+.s-icon{
+  width:64px; height:64px; border-radius:18px;
+  background:linear-gradient(145deg, var(--purple-deep), #170c2b);
+  border:1px solid var(--line-2);
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:26px;
+  box-shadow:inset 0 0 20px rgba(168,85,247,0.15);
+}
+.s-icon svg{width:28px; height:28px; stroke:var(--purple-glow);}
+.s-card h3{font-size:27px; font-weight:800; color:#fff; margin-bottom:10px;}
+.s-card .s-desc{color:var(--muted); font-size:14.5px; line-height:1.9; margin-bottom:26px;}
+
+.s-list{list-style:none;}
+.s-list li{
+  display:flex; align-items:flex-start; gap:12px;
+  padding:13px 0;
+  border-top:1px solid rgba(226,172,77,0.14);
+  font-size:15px; color:#e6ddf0; font-weight:500;
+}
+.s-list li:first-child{border-top:none;}
+.s-check{
+  flex-shrink:0; width:22px; height:22px; border-radius:7px; margin-top:1px;
+  background:linear-gradient(145deg, var(--purple-bright), var(--purple-deep));
+  display:flex; align-items:center; justify-content:center;
+}
+.s-check svg{width:12px; height:12px; stroke:#fff; stroke-width:3;}
+
+.s-card .btn{margin-top:30px; width:100%; justify-content:center;}
+
+/* ---------- why us ---------- */
+.why{padding:130px 0 60px;}
+.why-grid{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:24px;
+}
+@media (max-width:900px){ .why-grid{grid-template-columns:repeat(2,1fr);} }
+.why-card{
+  text-align:center; padding:34px 20px;
+  border-radius:20px;
+  border:1px solid transparent;
+  transition:border-color .3s ease, transform .3s ease;
+}
+.why-card:hover{border-color:var(--line); transform:translateY(-4px);}
+.why-icon{
+  width:60px; height:60px; margin:0 auto 18px;
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:conic-gradient(from 180deg, rgba(168,85,247,0.35), rgba(226,172,77,0.25), rgba(168,85,247,0.35));
+  padding:2px;
+}
+.why-icon-in{
+  width:100%; height:100%; border-radius:50%;
+  background:var(--bg-2);
+  display:flex; align-items:center; justify-content:center;
+}
+.why-icon svg{width:24px; height:24px; stroke:var(--gold-bright);}
+.why-card h4{font-size:16.5px; font-weight:700; color:#fff; margin-bottom:8px;}
+.why-card p{font-size:13.5px; color:var(--muted); line-height:1.8;}
+
+/* ---------- contact ---------- */
+.contact{padding:110px 0 60px;}
+.contact-panel{
+  position:relative;
+  border-radius:32px;
+  padding:70px 40px;
+  text-align:center;
+  overflow:hidden;
+  background:linear-gradient(165deg, rgba(124,63,201,0.18), rgba(226,172,77,0.06) 60%, rgba(7,5,12,0.4));
+  border:1px solid var(--line-2);
+}
+.contact-panel::before{
+  content:"";
+  position:absolute; top:-30%; right:-10%; width:50%; height:140%;
+  background:radial-gradient(circle, rgba(168,85,247,0.28), transparent 65%);
+  pointer-events:none;
+}
+.contact-panel h3{
+  font-size:clamp(28px,5vw,44px); font-weight:800;
+  background:linear-gradient(90deg, var(--gold-bright), #fff, var(--purple-glow));
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  margin-bottom:16px; position:relative;
+}
+.contact-panel > p{color:var(--muted); font-size:15px; margin-bottom:44px; position:relative;}
+
+.contact-grid{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:18px;
+  position:relative;
+}
+@media (max-width:700px){ .contact-grid{grid-template-columns:1fr;} }
+.contact-item{
+  display:flex; flex-direction:column; align-items:center; gap:12px;
+  background:rgba(19,11,33,0.65);
+  backdrop-filter:blur(6px);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:30px 18px;
+  text-decoration:none;
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1), border-color .25s ease, background .25s ease;
+}
+.contact-item:hover{transform:translateY(-6px) scale(1.02); border-color:var(--gold-bright); background:rgba(19,11,33,0.9);}
+.contact-item:focus-visible{outline:2px solid var(--gold-bright); outline-offset:3px;}
+.contact-item .c-icon{
+  width:52px; height:52px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(circle at 35% 30%, rgba(168,85,247,0.35), transparent 70%);
+  border:1px solid var(--line-2);
+}
+.contact-item .c-icon svg{width:22px; height:22px; stroke:var(--gold-bright);}
+.contact-item .label{font-size:12.5px; color:var(--muted); font-weight:600;}
+.contact-item .value{font-size:16px; font-weight:800; color:var(--text); direction:ltr;}
+
+/* ---------- footer ---------- */
+footer{
+  padding:50px 0 40px; text-align:center;
+  border-top:1px solid rgba(226,172,77,0.12);
+}
+.foot-logo{font-weight:800; font-size:16px; color:var(--muted); margin-bottom:10px;}
+.foot-logo .fb{color:var(--gold-bright);}
+.fine{font-size:12.5px; color:var(--muted-2);}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important; transition:none !important;}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-fx"><div class="g1"></div><div class="g2"></div><div class="g3"></div></div>
+<div class="grain"></div>
+<div id="sparks"></div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo"><span class="mark">FB</span> ادیتورF|B</div>
+    <a class="nav-cta" href="https://t.me/F_0_8_1_8" target="_blank" rel="noopener">شروع پروژه</a>
+  </div>
+</nav>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow"><span class="dot"></span> استودیوی ادیت و طراحی بصری</div>
+    <h1>ادیتور<span class="fb">F|B</span></h1>
+    <p class="hero-sub">از فیلم خام تا اثری که مخاطب رو میخکوب می‌کنه — ادیت سینمایی و پوستری که برند شما رو متفاوت نشون می‌ده.</p>
+
+    <div class="hero-ctas">
+      <a class="btn btn-primary" href="https://t.me/F_0_8_1_8" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        شروع سفارش در تلگرام
+      </a>
+      <a class="btn btn-ghost" href="https://instagram.com/fati08apb" target="_blank" rel="noopener">
+        مشاهده اینستاگرام
+      </a>
+    </div>
+
+    <div class="orbit-icons">
+      <div class="row">
+        <div class="tool-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M22 8l-6 4 6 4V8z"/></svg> Premiere Pro</div>
+        <div class="tool-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg> After Effects</div>
+        <div class="tool-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg> Illustrator</div>
+        <div class="tool-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg> رنگ‌بندی حرفه‌ای</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="marquee-band">
+  <div class="marquee-track">
+    <span>ادیت سینمایی</span><span>موشن گرافیک</span><span>طراحی پوستر</span><span>رنگ‌بندی حرفه‌ای</span><span>تدوین ۴K</span><span>هویت بصری برند</span>
+    <span>ادیت سینمایی</span><span>موشن گرافیک</span><span>طراحی پوستر</span><span>رنگ‌بندی حرفه‌ای</span><span>تدوین ۴K</span><span>هویت بصری برند</span>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <section class="services">
+    <div class="section-head reveal">
+      <div class="eyebrow"><span class="dot"></span> خدمات</div>
+      <h2>چه‌کاری برات انجام می‌دیم</h2>
+      <p>دو مسیر، یک استاندارد: کیفیت سینمایی در هر فریم.</p>
+    </div>
+
+    <div class="service-grid">
+      <div class="s-card reveal">
+        <span class="s-num">01</span>
+        <div class="s-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M7 6V4a1 1 0 011-1h8a1 1 0 011 1v2"/><circle cx="12" cy="13" r="3.2"/></svg>
+        </div>
+        <h3>ادیتوری</h3>
+        <p class="s-desc">تبدیل فیلم‌های خام شما به روایتی منسجم، با ریتم درست و جزئیاتی که حس حرفه‌ای بودن رو منتقل می‌کنه.</p>
+        <ul class="s-list">
+          <li><span class="s-check"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5"/></svg></span> کات و ریتم‌بندی سینمایی</li>
+          <li><span class="s-check"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5"/></svg></span> خروجی کامل در کیفیت 4K</li>
+          <li><span class="s-check"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5"/></svg></span> رنگ‌بندی، افکت و صداگذاری</li>
+          <li><span class="s-check"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5"/></svg></span> بازبینی رایگان تا رضایت کامل</li>
+        </ul>
+        <a class="btn btn-primary" href="https://t.me/F_0_8_1_8" target="_blank" rel="noopener">ثبت سفارش ادیتوری</a>
+      </div>
+
+      <div class="s-card reveal reveal-d2">
+        <span class="s-num">02</span>
+        <div class="s-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+        </div>
+        <h3>پوستر سازی</h3>
+        <p class="s-desc">طراحی‌ای که در یک نگاه دیده می‌شود؛ ترکیب‌بندی، تایپوگرافی و رنگ متناسب با هویت برند شما.</p>
+        <ul class="s-list">
+          <li><span class="s-check"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5"/></svg></span> طراحی حرفه‌ای و خلاقانه</li>
+          <li><span class="s-check"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5"/></svg></span> خاص و متناسب با برند شما</li>
+          <li><span class="s-check"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5"/></svg></span> فایل نهایی با کیفیت چاپ و وب</li>
+          <li><span class="s-check"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5"/></svg></span> تحویل سریع</li>
+        </ul>
+        <a class="btn btn-primary" href="https://t.me/F_0_8_1_8" target="_blank" rel="noopener">ثبت سفارش پوستر</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="why">
+    <div class="section-head reveal">
+      <div class="eyebrow"><span class="dot"></span> چرا ادیتورF|B</div>
+      <h2>استاندارد کاری ما</h2>
+    </div>
+    <div class="why-grid">
+      <div class="why-card reveal">
+        <div class="why-icon"><div class="why-icon-in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div></div>
+        <h4>تحویل سریع</h4>
+        <p>زمان‌بندی دقیق، بدون تأخیرهای غیرمنتظره.</p>
+      </div>
+      <div class="why-card reveal reveal-d1">
+        <div class="why-icon"><div class="why-icon-in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l2.9 6.3 6.9.9-5 4.9 1.2 6.9L12 17.8 5.9 21l1.2-6.9-5-4.9 6.9-.9L12 2z"/></svg></div></div>
+        <h4>کیفیت تضمینی</h4>
+        <p>هر پروژه پیش از تحویل، بازبینی چندمرحله‌ای می‌شود.</p>
+      </div>
+      <div class="why-card reveal reveal-d2">
+        <div class="why-icon"><div class="why-icon-in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18h6M10 22h4M12 2a6 6 0 00-4 10.5c.6.6 1 1.4 1 2.5h6c0-1.1.4-1.9 1-2.5A6 6 0 0012 2z"/></svg></div></div>
+        <h4>خلاقیت متناسب با سلیقه شما</h4>
+        <p>ایده‌پردازی نه بر اساس قالب، بلکه بر اساس برند شما.</p>
+      </div>
+      <div class="why-card reveal reveal-d3">
+        <div class="why-icon"><div class="why-icon-in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87M16 3.13a4 4 0 010 7.75M8 10.13a4 4 0 110-7.75"/><circle cx="12" cy="7" r="4"/><path d="M12 14a5 5 0 00-5 5v1h10v-1a5 5 0 00-5-5z"/></svg></div></div>
+        <h4>رضایت مشتری، اولویت اول</h4>
+        <p>ارتباط مستقیم و پیگیری تا لحظه‌ی تحویل نهایی.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact">
+    <div class="contact-panel reveal">
+      <div class="eyebrow"><span class="dot"></span> در دسترس همیشگی</div>
+      <h3>بیا شروع کنیم</h3>
+      <p>پروژه‌تو برامون بفرست، در سریع‌ترین زمان جواب می‌گیری.</p>
+      <div class="contact-grid">
+        <a class="contact-item" href="tel:09932054257">
+          <div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.9.68 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.32 1.85.55 2.81.68A2 2 0 0122 16.92z"/></svg></div>
+          <span class="label">تماس مستقیم</span>
+          <span class="value">09932054257</span>
+        </a>
+        <a class="contact-item" href="https://t.me/F_0_8_1_8" target="_blank" rel="noopener">
+          <div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></div>
+          <span class="label">تلگرام</span>
+          <span class="value">@F_0_8_1_8</span>
+        </a>
+        <a class="contact-item" href="https://instagram.com/fati08apb" target="_blank" rel="noopener">
+          <div class="c-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></div>
+          <span class="label">اینستاگرام</span>
+          <span class="value">fati08apb</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-logo">ادیتور<span class="fb">F|B</span></div>
+    <p class="fine">© تمامی حقوق برای استودیوی ادیتورF|B محفوظ است.</p>
+  </div>
+</footer>
+
+<script>
+// scroll reveal
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+},{threshold:0.15});
+revealEls.forEach(el=>io.observe(el));
+
+// card cursor glow
+document.querySelectorAll('.s-card').forEach(card=>{
+  card.addEventListener('mousemove', e=>{
+    const r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', ((e.clientX-r.left)/r.width*100)+'%');
+    card.style.setProperty('--my', ((e.clientY-r.top)/r.height*100)+'%');
+  });
+});
+
+// floating gold sparks
+const sparksHost = document.getElementById('sparks');
+const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(!prefersReduced){
+  const n = window.innerWidth < 700 ? 10 : 20;
+  for(let i=0;i<n;i++){
+    const s = document.createElement('div');
+    s.className='spark';
+    const size = Math.random()*2.5+1.5;
+    s.style.width = size+'px';
+    s.style.height = size+'px';
+    s.style.left = Math.random()*100+'vw';
+    s.style.bottom = '-10px';
+    s.style.animationDuration = (Math.random()*14+12)+'s';
+    s.style.animationDelay = (Math.random()*14)+'s';
+    sparksHost.appendChild(s);
+  }
+}
+</script>
+
+</body>
+</html>
